@@ -1,9 +1,28 @@
+'''
+processdatafiles.py
+
+This method processes the incoming datafile from the
+Flacktek Mixer.  The method first determines if this
+a mixer file and if so stores it in the appropriate location.
+
+Developer:  Dan Ballard
+Creation Date:  January 30, 2022
+Revision Date: May 8, 2022
+
+TODO:  remove the tqdm calls since there will be no
+user watching the process of loading incoming files.
+
+'''
+
+
 import socket
 import tqdm
 import os
 
 def readIncomingMsg():
-    SERVER_HOST = "10.0.0.119"
+    SERVER_HOST = "10.0.0.119"          #  The server address
+                                        # The apollo server is
+                                        # 192.168.10.117
     SERVER_PORT = 5001
     BUFFER_SIZE = 4096
     SEPARATOR = "<SEPARATOR>"
@@ -24,8 +43,8 @@ def readIncomingMsg():
     folder_name = os.path.basename(directory_path)
     print("My directory name is : " + folder_name)
 
-
     filename = os.path.basename(filename)
+    print("My filename is : " + filename)
     filesize = int(filesize)
     progress = tqdm.tqdm(range(filesize), f"Receiving {filename}", unit="B", unit_scale=True, unit_divisor=1024)
     with open(filename, "wb") as f:
@@ -34,10 +53,7 @@ def readIncomingMsg():
             if not bytes_read:
                 break
             f.write(bytes_read)
-            #inputstring = str(bytes_read, 'UTF-8')
-            #headerlist.append(inputstring)
-            #print(inputstring[0:10])
             progress.update(len(bytes_read))
-        #print(headerlist)
     client_socket.close()
     s.close()
+    return filename
